@@ -15,7 +15,9 @@ RepeatRange::RepeatRange(int a_, int b_, bool haveMax_)
    a = a_;
    b = b_;
    haveMax = haveMax_;
-   makeFirstValue();
+
+   firstValue = makeFirstValue();
+   lastValue = b;
 }
 
 //----------------------------------------------------------------
@@ -84,42 +86,24 @@ RepeatRange * RepeatRange::tryRecognize(QString str, int & pos)
 }
 
 //----------------------------------------------------------------
-// Min and Max bounds
-
-int RepeatRange::getFirstValue()
-{
-   return a;
-}
-
-int RepeatRange::getLastValue()
-{
-   return b;
-}
-
-int RepeatRange::getCurrentValue()
-{
-   return current;
-}
-
-//----------------------------------------------------------------
 // Iterative make
 
 int RepeatRange::makeFirstValue()
 {
-   current = a;
-   return current;
+   currentValue = a;
+   return currentValue;
 }
 
 int RepeatRange::makeNextValue()
 {
-   if (current < b)
-      current++;
-   return current;
+   if (currentValue < b)
+      currentValue++;
+   return currentValue;
 }
 
 bool RepeatRange::atEnd()
 {
-   return (current == b);
+   return (currentValue == b);
 }
 
 //----------------------------------------------------------------
@@ -143,4 +127,12 @@ QString RepeatRange::print()
    if (haveMax) str += QString("%1").arg(b);
 
    return str + "}";
+}
+
+quint64 RepeatRange::count()
+{
+   if (haveMax)
+      return (b - a + 1);
+
+   return 1; //TODO fix counter without haveMax
 }

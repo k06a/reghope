@@ -12,6 +12,9 @@ CommonUnitInfo * CharConst::info = NULL;
 CharConst::CharConst(QChar value_)
 {
 	value = value_;
+
+   firstValue = makeFirstValue();
+   lastValue = value;
 }
 
 //----------------------------------------------------------------
@@ -97,24 +100,6 @@ CharConst * CharConst::tryRecognize(QString str, int & pos)
 }
 
 //----------------------------------------------------------------
-// Min and Max bounds
-
-QString CharConst::getFirstValue()
-{
-	return value;
-}
-
-QString CharConst::getLastValue()
-{
-	return value;
-}
-
-QString CharConst::getCurrentValue()
-{
-	return value;
-}
-
-//----------------------------------------------------------------
 // Iterative make
 
 QString CharConst::makeFirstValue()
@@ -140,4 +125,9 @@ QString CharConst::print()
       return QString("\\x%1").arg((int)info->getByte(value), 2, 16, QChar('0'));
 
    return QString("%1").arg(value);
+}
+
+quint64 CharConst::count()
+{
+   return 1;
 }

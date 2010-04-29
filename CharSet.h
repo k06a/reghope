@@ -18,7 +18,6 @@ namespace RegHope
    {
       QList<QChar> values;
       int currentIndex;
-      QString currentValue;
 
    public:
       static CommonUnitInfo * info;
@@ -30,17 +29,13 @@ namespace RegHope
       // Returns new object or null, and moves \pos after reg.exp.
       static CharSet * tryRecognize(QString str, int & pos);
 
-      // Min and Max bounds
-      QString getFirstValue();
-      QString getLastValue();
-      QString getCurrentValue();
-
       // Iterative make
-      QString makeFirstValue();
-      QString makeNextValue();
-      bool atEnd();
+      virtual QString makeFirstValue();
+      virtual QString makeNextValue();
+      virtual bool atEnd();
 
       virtual QString print();
+      virtual quint64 count();
    };
 }
 

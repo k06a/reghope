@@ -18,7 +18,6 @@ namespace RegHope
    class RegularExpression : public IUnit<QString>
    {
       QList<IUnit<QString>*> unitList;
-      QString currentValue;
 
    public:
       static CommonUnitInfo * info;
@@ -32,17 +31,13 @@ namespace RegHope
 
       static RegularExpression * parse(QString str);
 
-      // Min and Max bounds
-      QString getFirstValue();
-      QString getLastValue();
-      QString getCurrentValue();
-
       // Iterative make
       QString makeFirstValue();
       QString makeNextValue();
       bool atEnd();
 
       virtual QString print();
+      virtual quint64 count();
    };
 }
 

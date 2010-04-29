@@ -13,7 +13,13 @@ RegularVector::RegularVector(QList<IUnit<QString> *> unitList_, RepeatRange *rep
 {
    unitList = unitList_;
    repeatRange = repeatRange_;
-   makeFirstValue();
+
+   firstValue = makeFirstValue();
+
+   int tmpLen = repeatRange->getLastValue();
+   for(int i = 0; i < tmpLen; i++)
+      foreach(IUnit<QString>* unit, unitList)
+         lastValue += unit->getLastValue();
 }
 
 //----------------------------------------------------------------
@@ -57,7 +63,7 @@ RegularVector * RegularVector::tryRecognize(QString str, int & pos)
    pos++;
 
    if (list.size() == 0)
-      throw RegException(pos, QObject::tr("Brackets can not be empty"));
+      throw RegException(pos-2, QObject::tr("Brackets can not be empty"), "^^");
 
    // Repeater
    RepeatRange *repeatRange = (RepeatRange*)RepeatRange::tryRecognize(str, pos);
@@ -65,32 +71,6 @@ RegularVector * RegularVector::tryRecognize(QString str, int & pos)
       repeatRange = new RepeatRange(1, 1, true);
 
    return new RegularVector(list, repeatRange);
-}
-
-//----------------------------------------------------------------
-// Min and Max bounds
-
-QString RegularVector::getFirstValue()
-{
-   QString str;
-   for(int i = 0; i < repeatRange->getFirstValue(); i++)
-      foreach(IUnit<QString>* unit, unitList)
-         str += unit->getFirstValue();
-   return str;
-}
-
-QString RegularVector::getLastValue()
-{
-   QString str;
-   for(int i = 0; i < repeatRange->getLastValue(); i++)
-      foreach(IUnit<QString>* unit, unitList)
-         str += unit->getLastValue();
-   return str;
-}
-
-QString RegularVector::getCurrentValue()
-{
-   return currentValue;
 }
 
 //----------------------------------------------------------------
@@ -163,4 +143,17 @@ QString RegularVector::print()
       str += unit->print();
 
    return str + ")" + repeatRange->print();
+}
+
+quint64 RegularVector::count()
+{
+   quint64 tmpCount = 1;
+
+   foreach(IUnit<QString> *unit, unitList)
+      tmpCount *= unit->count();
+
+   if (repeatRange->getFirstValue() != 0)
+      return tmpCount * repeatRange->count();
+
+   return tmpCount * (repeatRange->count() - 1) + 1;
 }

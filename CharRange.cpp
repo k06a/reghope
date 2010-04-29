@@ -13,6 +13,9 @@ CharRange::CharRange( CharConst * value_1_,
 {
 	value_1 = value_1_;
 	value_2 = value_2_;
+
+   firstValue = makeFirstValue();
+   lastValue = value_2->getLastValue();
 }
 
 //----------------------------------------------------------------
@@ -80,24 +83,6 @@ CharRange * CharRange::tryRecognize(QString str, int & pos)
 }
 
 //----------------------------------------------------------------
-// Min and Max bounds
-
-QString CharRange::getFirstValue()
-{
-	return value_1->getFirstValue();
-}
-
-QString CharRange::getLastValue()
-{
-	return value_2->getLastValue();
-}
-
-QString CharRange::getCurrentValue()
-{
-	return currentValue;
-}
-
-//----------------------------------------------------------------
 // Iterative make
 
 QString CharRange::makeFirstValue()
@@ -123,4 +108,10 @@ bool CharRange::atEnd()
 QString CharRange::print()
 {
    return value_1->getFirstValue() + "-" + value_2->getLastValue();
+}
+
+quint64 CharRange::count()
+{
+   return (info->getByte(value_2->getCurrentValue()[0]) -
+           info->getByte(value_1->getCurrentValue()[0]) + 1);
 }

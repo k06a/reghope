@@ -12,7 +12,9 @@ CommonUnitInfo * CharSet::info = NULL;
 CharSet::CharSet(QSet<QChar> values_)
 {
    values = values_.values();
-	makeFirstValue();
+
+   firstValue = makeFirstValue();
+   lastValue = values.last();
 }
 
 //----------------------------------------------------------------
@@ -77,7 +79,7 @@ CharSet * CharSet::tryRecognize(QString str, int & pos)
 	}
 
 	if (!inverse && list.size() == 0)
-		throw RegException(pos, "Set of characters can not be empty");
+      throw RegException(pos-2, "Set of characters can not be empty", "^^");
 
 	// Unition of sets
    QSet<QChar> set;
@@ -108,36 +110,18 @@ CharSet * CharSet::tryRecognize(QString str, int & pos)
 }
 
 //----------------------------------------------------------------
-// Min and Max bounds
-
-QString CharSet::getFirstValue()
-{
-   return values.first();
-}
-
-QString CharSet::getLastValue()
-{
-   return values.last();
-}
-
-QString CharSet::getCurrentValue()
-{
-	return currentValue;
-}
-
-//----------------------------------------------------------------
 // Iterative make
 
 QString CharSet::makeFirstValue()
 {
    currentIndex = 0;
-   currentValue = values[0];
+   currentValue = values[currentIndex];
    return currentValue;
 }
 
 QString CharSet::makeNextValue()
 {
-   if (currentIndex < values.size()-1)
+   if (currentIndex + 1 < values.size())
       currentIndex++;
    currentValue = values[currentIndex];
    return currentValue;
@@ -145,7 +129,7 @@ QString CharSet::makeNextValue()
 
 bool CharSet::atEnd()
 {
-   return (currentIndex == values.size()-1);
+   return (currentIndex + 1 == values.size());
 }
 
 //----------------------------------------------------------------
@@ -158,4 +142,9 @@ QString CharSet::print()
       str += CharConst(values[i]).print();
 
    return str + "]";
+}
+
+quint64 CharSet::count()
+{
+   return values.size();
 }

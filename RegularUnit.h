@@ -17,7 +17,6 @@ namespace RegHope
    {
       IUnit<QString> * charUnit;
       RepeatRange * repeatRange;
-      QString current;
 
    public:
       static CommonUnitInfo * info;
@@ -29,17 +28,13 @@ namespace RegHope
       // Returns new object or null, and moves \pos after reg.exp.
       static RegularUnit * tryRecognize(QString str, int & pos);
 
-      // Min and Max bounds
-      QString getFirstValue();
-      QString getLastValue();
-      QString getCurrentValue();
-
       // Iterative make
       QString makeFirstValue();
       QString makeNextValue();
       bool atEnd();
 
       virtual QString print();
+      virtual quint64 count();
    };
 }
 

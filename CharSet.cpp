@@ -12,6 +12,7 @@ CommonUnitInfo * CharSet::info = NULL;
 CharSet::CharSet(QSet<QChar> values_)
 {
    values = values_.values();
+   qSort(values.begin(), values.end());
 
    firstValue = makeFirstValue();
    lastValue = values.last();

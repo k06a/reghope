@@ -47,32 +47,40 @@ RegularUnit * RegularUnit::tryRecognize(QString str, int & pos)
 
 QString RegularUnit::makeFirstValue()
 {
-   charUnit->makeFirstValue();
-
    currentValue = "";
    int tmpLen = repeatRange->makeFirstValue();
+   QString tmpStr = charUnit->makeFirstValue();
    for (int i=0; i<tmpLen; i++)
-      currentValue += charUnit->getLastValue();
+      currentValue += tmpStr;
 
    return currentValue;
 }
 
 QString RegularUnit::makeNextValue()
 {
-   if (charUnit->atEnd())
+   if (repeatRange->getCurrentValue() == 0)
    {
-      if (repeatRange->atEnd())
-         return currentValue;
-      else
-         repeatRange->makeNextValue();
+      repeatRange->makeNextValue();
+   }
+   else
+   {
+      if (charUnit->atEnd())
+      {
+         if (repeatRange->atEnd())
+            return currentValue;
 
-      charUnit->makeFirstValue();
+         repeatRange->makeNextValue();
+         charUnit->makeFirstValue();
+      }
+      else
+         charUnit->makeNextValue();
    }
 
    currentValue = "";
-   int tmpLen = repeatRange->makeNextValue();
+   int tmpLen = repeatRange->getCurrentValue();
+   QString tmpStr = charUnit->getCurrentValue();
    for (int i=0; i<tmpLen; i++)
-      currentValue += charUnit->getLastValue();
+      currentValue += tmpStr;
 
    return currentValue;
 }

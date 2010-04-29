@@ -16,6 +16,7 @@ namespace RegHope
    class CharConst : public IUnit<QString>
    {
       QChar value;
+      bool atEnd_;
 
    public:
       static CommonUnitInfo * info;

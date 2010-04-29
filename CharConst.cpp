@@ -104,17 +104,19 @@ CharConst * CharConst::tryRecognize(QString str, int & pos)
 
 QString CharConst::makeFirstValue()
 {
+   atEnd_ = false;
 	return value;
 }
 
 QString CharConst::makeNextValue()
 {
+   atEnd_ = true;
 	return value;
 }
 
 bool CharConst::atEnd()
 {
-	return true;
+   return atEnd_;
 }
 
 //----------------------------------------------------------------

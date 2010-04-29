@@ -71,22 +71,30 @@ QString RegularExpression::makeNextValue()
    for(int i = unitList.size()-1; i >= 0; i--)
    {
       ended &= unitList[i]->atEnd();
+
+      // Find leftest not ended element
       if (!ended)
       {
          unitList[i++]->makeNextValue();
 
          while (i < unitList.size())
             unitList[i++]->makeFirstValue();
+
+         break;
       }
    }
 
-   if (!ended)
+   if (ended)
    {
       currentValue = "";
 
       foreach(IUnit<QString>* unit, unitList)
          currentValue += unit->getCurrentValue();
    }
+
+   currentValue = "";
+   foreach(IUnit<QString>* unit, unitList)
+      currentValue += unit->getCurrentValue();
 
    return currentValue;
 }

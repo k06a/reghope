@@ -16,7 +16,7 @@ namespace RegHope
 
    class CharSet : public IUnit<QString>
    {
-      QList<QString> values;
+      QList<QChar> values;
       int currentIndex;
       QString currentValue;
 
@@ -24,7 +24,7 @@ namespace RegHope
       static CommonUnitInfo * info;
 
    public:
-      CharSet(QSet<QString> values_);
+      CharSet(QSet<QChar> values_);
 
       // Try to create reg.exp. unit from \str on position \pos.
       // Returns new object or null, and moves \pos after reg.exp.

@@ -6,27 +6,27 @@
 #include <QList>
 
 //----------------------------------------------------------------
-// GroupUnit = "(" (RegularUnit | GroupUnit)+ ")" (RepeatUnit)?
+// GroupUnit = "(" (RegularUnit | GroupUnit)+ ")" (RepeatRange)?
 //----------------------------------------------------------------
 
 namespace RegHope
 {
    class GroupUnit;
-   class RepeatUnit;
+   class RepeatRange;
    class RegularUnit;
    class CommonUnitInfo;
 
    class RegularVector : public IUnit<QString>
    {
       QList<IUnit<QString>*> unitList;
-      RepeatUnit *repeatUnit;
+      RepeatRange *repeatRange;
       QString currentValue;
 
    public:
       static CommonUnitInfo * info;
 
    public:
-      RegularVector(QList<IUnit<QString>*> unitList_, RepeatUnit *repeatUnit_);
+      RegularVector(QList<IUnit<QString>*> unitList_, RepeatRange *repeatRange_);
 
       // Try to create reg.exp. unit from \str on position \pos.
       // Returns new object or null, and moves \pos after reg.exp.

@@ -25,7 +25,7 @@ CharRange * CharRange::tryRecognize(QString str, int & pos)
 {
    int original = pos;
 
-   if (pos + 1 == str.size()) return NULL;
+   if (pos == str.size()) return NULL;
 
 	// Check if dot
 	if (str[pos] == '.')
@@ -43,7 +43,7 @@ CharRange * CharRange::tryRecognize(QString str, int & pos)
 		return NULL;
 	}
 
-   if (pos + 1 == str.size())
+   if (pos == str.size())
    {
       pos = original;
       delete unit_1;
@@ -58,12 +58,8 @@ CharRange * CharRange::tryRecognize(QString str, int & pos)
 		return NULL;
 	}
 
-   if (pos + 1 == str.size())
-   {
-      pos = original;
-      delete unit_1;
-      return NULL;
-   }
+   if (pos == str.size())
+      throw RegException(pos, QObject::tr("Range ending expected"));
 
 	// Second character
 	CharConst * unit_2 = CharConst::tryRecognize(str, pos);
@@ -73,6 +69,12 @@ CharRange * CharRange::tryRecognize(QString str, int & pos)
 		delete unit_1;
 		return NULL;
 	}
+
+   if ( (info->getByte(unit_1->getCurrentValue()[0])) >
+        (info->getByte(unit_2->getCurrentValue()[0])) )
+   {
+      throw RegException(pos-3, QObject::tr("Range must be specified by lesser to greater value"), "^^^");
+   }
 
 	return new CharRange(unit_1, unit_2);
 }

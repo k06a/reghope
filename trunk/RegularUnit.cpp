@@ -1,6 +1,5 @@
 #include "RegularUnit.h"
-#include "CharUnit.h"
-#include "RepeatUnit.h"
+#include "RepeatRange.h"
 #include "CommonUnitInfo.h"
 
 using namespace RegHope;
@@ -9,30 +8,32 @@ CommonUnitInfo * RegularUnit::info = NULL;
 
 //----------------------------------------------------------------
 
-RegularUnit::RegularUnit(CharUnit *charUnit_, RepeatUnit *repeatUnit_)
+RegularUnit::RegularUnit(IUnit<QString> *charUnit_, RepeatRange *repeatRange_)
 {
    charUnit = charUnit_;
-   repeatUnit = repeatUnit_;
+   repeatRange = repeatRange_;
    makeFirstValue();
 }
 
 //----------------------------------------------------------------
 
-// RegularUnit = CharUnit (RepeatUnit)?
+// RegularUnit = (CharSet | CharConst) (RepeatRange)?
 
 // Try to create reg.exp. unit from \str on position \pos.
 // Returns new object or null, and moves \pos after reg.exp.
 RegularUnit * RegularUnit::tryRecognize(QString str, int & pos)
 {
-   IUnit<QString> * ptr1 = CharUnit::tryRecognize(str, pos);
+   IUnit<QString> * ptr1 = CharSet::tryRecognize(str, pos);
    if (ptr1 == NULL)
-      return NULL;
+      ptr1 = CharConst::tryRecognize(str, pos);
 
-   IUnit<int> * ptr2 = RepeatUnit::tryRecognize(str, pos);
+   if (ptr1 == NULL) return NULL;
+
+   IUnit<int> * ptr2 = RepeatRange::tryRecognize(str, pos);
    if (ptr2 == NULL)
-      ptr2 = (IUnit<int> *)new RepeatUnit(1, 1, true);
+      ptr2 = (IUnit<int> *)new RepeatRange(1, 1, true);
 
-   return new RegularUnit((CharUnit*)ptr1, (RepeatUnit*)ptr2);
+   return new RegularUnit(ptr1, (RepeatRange*)ptr2);
 }
 
 //----------------------------------------------------------------
@@ -40,7 +41,7 @@ RegularUnit * RegularUnit::tryRecognize(QString str, int & pos)
 
 QString RegularUnit::getFirstValue()
 {
-   int len = repeatUnit->getFirstValue();
+   int len = repeatRange->getFirstValue();
    QString sum;
 
    for (int i=0; i<len; i++)
@@ -51,7 +52,7 @@ QString RegularUnit::getFirstValue()
 
 QString RegularUnit::getLastValue()
 {
-   int len = repeatUnit->getLastValue();
+   int len = repeatRange->getLastValue();
    QString sum;
 
    for (int i=0; i<len; i++)
@@ -71,7 +72,7 @@ QString RegularUnit::getCurrentValue()
 QString RegularUnit::makeFirstValue()
 {
    charUnit->makeFirstValue();
-   int len = repeatUnit->makeFirstValue();
+   int len = repeatRange->makeFirstValue();
    current = "";
 
    for (int i=0; i<len; i++)
@@ -84,16 +85,16 @@ QString RegularUnit::makeNextValue()
 {
    if (charUnit->atEnd())
    {
-      if (repeatUnit->atEnd())
+      if (repeatRange->atEnd())
          return current;
       else
-         repeatUnit->makeNextValue();
+         repeatRange->makeNextValue();
 
       charUnit->makeFirstValue();
    }
 
 
-   int len = repeatUnit->makeNextValue();
+   int len = repeatRange->makeNextValue();
    current = "";
 
    for (int i=0; i<len; i++)
@@ -104,12 +105,12 @@ QString RegularUnit::makeNextValue()
 
 bool RegularUnit::atEnd()
 {
-   return (charUnit->atEnd() && repeatUnit->atEnd());
+   return (charUnit->atEnd() && repeatRange->atEnd());
 }
 
 //----------------------------------------------------------------
 
 QString RegularUnit::print()
 {
-   return charUnit->print() + repeatUnit->print();
+   return charUnit->print() + repeatRange->print();
 }

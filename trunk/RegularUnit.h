@@ -4,26 +4,26 @@
 #include "IUnit.h"
 
 //----------------------------------------------------------------
-// RegularUnit       = CharUnit (RepeatUnit)?
+// RegularUnit = (CharSet | CharConst) (RepeatRange)?
 //----------------------------------------------------------------
 
 namespace RegHope
 {
    class CharUnit;
-   class RepeatUnit;
+   class RepeatRange;
    class CommonUnitInfo;
 
    class RegularUnit : public IUnit<QString>
    {
-      CharUnit * charUnit;
-      RepeatUnit * repeatUnit;
+      IUnit<QString> * charUnit;
+      RepeatRange * repeatRange;
       QString current;
 
    public:
       static CommonUnitInfo * info;
 
    public:
-      RegularUnit(CharUnit *charUnit_, RepeatUnit *repeatUnit_);
+      RegularUnit(IUnit<QString> *charUnit_, RepeatRange *repeatRange_);
 
       // Try to create reg.exp. unit from \str on position \pos.
       // Returns new object or null, and moves \pos after reg.exp.

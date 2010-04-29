@@ -9,12 +9,14 @@ namespace RegHope
    {
       int errorPosition;
       QString errorMesage;
+      QString marker;
 
    public:
-      RegException(int pos, QString str)
+      RegException(int pos, QString str, QString mark = "^")
       {
          errorPosition = pos;
          errorMesage = str;
+         marker = mark;
       }
 
       int getErrorPosition()
@@ -25,6 +27,11 @@ namespace RegHope
       QString getErrorMesage()
       {
          return errorMesage;
+      }
+
+      QString getErrorMarker()
+      {
+         return marker;
       }
    };
 }

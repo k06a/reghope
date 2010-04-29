@@ -1,6 +1,6 @@
 #include "RegularVector.h"
 #include "RegularUnit.h"
-#include "RepeatUnit.h"
+#include "RepeatRange.h"
 #include "CommonUnitInfo.h"
 
 using namespace RegHope;
@@ -9,10 +9,10 @@ CommonUnitInfo * RegularVector::info = NULL;
 
 //----------------------------------------------------------------
 
-RegularVector::RegularVector(QList<IUnit<QString> *> unitList_, RepeatUnit *repeatUnit_)
+RegularVector::RegularVector(QList<IUnit<QString> *> unitList_, RepeatRange *repeatRange_)
 {
    unitList = unitList_;
-   repeatUnit = repeatUnit_;
+   repeatRange = repeatRange_;
    makeFirstValue();
 }
 
@@ -24,6 +24,7 @@ RegularVector::RegularVector(QList<IUnit<QString> *> unitList_, RepeatUnit *repe
 // Returns new object or null, and moves \pos after reg.exp.
 RegularVector * RegularVector::tryRecognize(QString str, int & pos)
 {
+   if (pos == str.size()) return NULL;
    int origin = pos;
 
    // Check for "("
@@ -33,39 +34,37 @@ RegularVector * RegularVector::tryRecognize(QString str, int & pos)
       return NULL;
    }
 
+   if (pos == str.size())
+      throw RegException(pos, QObject::tr("Vector values expected"));
+
    QList<IUnit<QString>*> list;
    while (true)
    {
-      if (str[pos] == ')')
+      if (pos == str.size())
+         throw RegException(pos, QObject::tr("Symbol \")\" expected"));
+
+      if (str[pos] == ')') break;
+
+      IUnit<QString> *unit = RegularVector::tryRecognize(str, pos);
+      if (unit == NULL)
+         unit = RegularUnit::tryRecognize(str, pos);
+
+      if (unit == NULL)
          break;
 
-      RegularVector *groupUnit = RegularVector::tryRecognize(str, pos);
-      if (groupUnit == NULL)
-      {
-         RegularUnit *regularUnit = RegularUnit::tryRecognize(str, pos);
-         if (regularUnit == NULL)
-            break;
-
-         list.append(regularUnit);
-         continue;
-      }
-
-      list.append(groupUnit);
+      list.append(unit);
    }
+   pos++;
 
    if (list.size() == 0)
-      throw new RegException(pos, QObject::tr("Brackets can not be empty"));
-
-   // Check for ")"
-   if (str[pos++] != ')')
-      throw new RegException(pos, QObject::tr("Expected \")\" character"));
+      throw RegException(pos, QObject::tr("Brackets can not be empty"));
 
    // Repeater
-   RepeatUnit *repeatUnit = (RepeatUnit*)RepeatUnit::tryRecognize(str, pos);
-   if (repeatUnit == NULL)
-      repeatUnit = new RepeatUnit(1, 1, true);
+   RepeatRange *repeatRange = (RepeatRange*)RepeatRange::tryRecognize(str, pos);
+   if (repeatRange == NULL)
+      repeatRange = new RepeatRange(1, 1, true);
 
-   return new RegularVector(list, repeatUnit);
+   return new RegularVector(list, repeatRange);
 }
 
 //----------------------------------------------------------------
@@ -74,7 +73,7 @@ RegularVector * RegularVector::tryRecognize(QString str, int & pos)
 QString RegularVector::getFirstValue()
 {
    QString str;
-   for(int i = 0; i < repeatUnit->getFirstValue(); i++)
+   for(int i = 0; i < repeatRange->getFirstValue(); i++)
       foreach(IUnit<QString>* unit, unitList)
          str += unit->getFirstValue();
    return str;
@@ -83,7 +82,7 @@ QString RegularVector::getFirstValue()
 QString RegularVector::getLastValue()
 {
    QString str;
-   for(int i = 0; i < repeatUnit->getLastValue(); i++)
+   for(int i = 0; i < repeatRange->getLastValue(); i++)
       foreach(IUnit<QString>* unit, unitList)
          str += unit->getLastValue();
    return str;
@@ -100,7 +99,7 @@ QString RegularVector::getCurrentValue()
 QString RegularVector::makeFirstValue()
 {
    currentValue = "";
-   int n = repeatUnit->makeFirstValue();
+   int n = repeatRange->makeFirstValue();
 
    for(int i = 0; i < n; i++)
       foreach(IUnit<QString>* unit, unitList)
@@ -128,10 +127,10 @@ QString RegularVector::makeNextValue()
 
    if (ended)
    {
-      if (repeatUnit->atEnd())
+      if (repeatRange->atEnd())
          return currentValue;
 
-      repeatUnit->makeNextValue();
+      repeatRange->makeNextValue();
 
       foreach(IUnit<QString> *unit, unitList)
          unit->makeFirstValue();
@@ -142,7 +141,7 @@ QString RegularVector::makeNextValue()
 
 bool RegularVector::atEnd()
 {
-   bool ended = repeatUnit->atEnd();
+   bool ended = repeatRange->atEnd();
 
    foreach(IUnit<QString> *unit, unitList)
    {
@@ -163,5 +162,5 @@ QString RegularVector::print()
    foreach(IUnit<QString> *unit, unitList)
       str += unit->print();
 
-   return str + ")" + repeatUnit->print();
+   return str + ")" + repeatRange->print();
 }

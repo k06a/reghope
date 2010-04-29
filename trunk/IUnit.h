@@ -35,6 +35,11 @@ namespace RegHope
 	template<typename T>
 	class IUnit
 	{
+   protected:
+      T firstValue;
+      T currentValue;
+      T lastValue;
+
 	public:
 		virtual ~IUnit() {}
 
@@ -43,9 +48,20 @@ namespace RegHope
 		static IUnit * tryRecognize(QString str, int & pos);
 
 		// Min and Max bounds
-		virtual T getFirstValue() = 0;
-		virtual T getLastValue() = 0;
-		virtual T getCurrentValue() = 0;
+      T getFirstValue()
+      {
+         return firstValue;
+      }
+
+      T getCurrentValue()
+      {
+         return currentValue;
+      }
+
+      T getLastValue()
+      {
+         return lastValue;
+      }
 
 		// Iterative make
 		virtual T makeFirstValue() = 0;
@@ -53,9 +69,8 @@ namespace RegHope
 		virtual bool atEnd() = 0;
 
       virtual QString print() = 0;
+      virtual quint64 count() = 0;
 	};
-
-	bool tryReadInt(QString str, int & pos, int & value);
 }
 
 #endif // IUNIT_H

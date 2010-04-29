@@ -12,7 +12,11 @@ CommonUnitInfo * RegularExpression::info = NULL;
 RegularExpression::RegularExpression(QList<IUnit<QString> *> unitList_)
 {
    unitList = unitList_;
-   makeFirstValue();
+
+   firstValue = makeFirstValue();
+
+   foreach(IUnit<QString> *unit, unitList)
+      lastValue += unit->getLastValue();
 }
 
 //----------------------------------------------------------------
@@ -46,30 +50,6 @@ RegularExpression * RegularExpression::parse(QString str)
 {
    int pos = 0;
    return (RegularExpression*)tryRecognize(str, pos);
-}
-
-//----------------------------------------------------------------
-// Min and Max bounds
-
-QString RegularExpression::getFirstValue()
-{
-   QString str;
-   foreach(IUnit<QString> *unit, unitList)
-      str += unit->getFirstValue();
-   return str;
-}
-
-QString RegularExpression::getLastValue()
-{
-   QString str;
-   foreach(IUnit<QString> *unit, unitList)
-      str += unit->getLastValue();
-   return str;
-}
-
-QString RegularExpression::getCurrentValue()
-{
-   return currentValue;
 }
 
 //----------------------------------------------------------------
@@ -135,4 +115,14 @@ QString RegularExpression::print()
       str += unit->print();
 
    return str;
+}
+
+quint64 RegularExpression::count()
+{
+   quint64 tmpCount = 1;
+
+   foreach(IUnit<QString> *unit, unitList)
+      tmpCount *= unit->count();
+
+   return tmpCount;
 }

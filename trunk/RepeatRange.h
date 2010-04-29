@@ -15,7 +15,6 @@ namespace RegHope
    {
       int a, b;
       bool haveMax;
-      int current;
 
    public:
       static CommonUnitInfo * info;
@@ -27,17 +26,13 @@ namespace RegHope
       // Returns new object or null, and moves \pos after reg.exp.
       static RepeatRange * tryRecognize(QString str, int & pos);
 
-      // Min and Max bounds
-      int getFirstValue();
-      int getLastValue();
-      int getCurrentValue();
-
       // Iterative make
       int makeFirstValue();
       int makeNextValue();
       bool atEnd();
 
       virtual QString print();
+      virtual quint64 count();
    };
 }
 

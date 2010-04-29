@@ -12,7 +12,13 @@ RegularUnit::RegularUnit(IUnit<QString> *charUnit_, RepeatRange *repeatRange_)
 {
    charUnit = charUnit_;
    repeatRange = repeatRange_;
-   makeFirstValue();
+
+   firstValue = makeFirstValue();
+
+   int tmpLen = repeatRange->getLastValue();
+   QString tmpStr = charUnit->getLastValue();
+   for (int i=0; i<tmpLen; i++)
+      lastValue += tmpStr;
 }
 
 //----------------------------------------------------------------
@@ -37,48 +43,18 @@ RegularUnit * RegularUnit::tryRecognize(QString str, int & pos)
 }
 
 //----------------------------------------------------------------
-// Min and Max bounds
-
-QString RegularUnit::getFirstValue()
-{
-   int len = repeatRange->getFirstValue();
-   QString sum;
-
-   for (int i=0; i<len; i++)
-      sum += charUnit->getFirstValue();
-
-   return sum;
-}
-
-QString RegularUnit::getLastValue()
-{
-   int len = repeatRange->getLastValue();
-   QString sum;
-
-   for (int i=0; i<len; i++)
-      sum += charUnit->getLastValue();
-
-   return sum;
-}
-
-QString RegularUnit::getCurrentValue()
-{
-   return current;
-}
-
-//----------------------------------------------------------------
 // Iterative make
 
 QString RegularUnit::makeFirstValue()
 {
    charUnit->makeFirstValue();
-   int len = repeatRange->makeFirstValue();
-   current = "";
 
-   for (int i=0; i<len; i++)
-      current += charUnit->getLastValue();
+   currentValue = "";
+   int tmpLen = repeatRange->makeFirstValue();
+   for (int i=0; i<tmpLen; i++)
+      currentValue += charUnit->getLastValue();
 
-   return current;
+   return currentValue;
 }
 
 QString RegularUnit::makeNextValue()
@@ -86,21 +62,19 @@ QString RegularUnit::makeNextValue()
    if (charUnit->atEnd())
    {
       if (repeatRange->atEnd())
-         return current;
+         return currentValue;
       else
          repeatRange->makeNextValue();
 
       charUnit->makeFirstValue();
    }
 
+   currentValue = "";
+   int tmpLen = repeatRange->makeNextValue();
+   for (int i=0; i<tmpLen; i++)
+      currentValue += charUnit->getLastValue();
 
-   int len = repeatRange->makeNextValue();
-   current = "";
-
-   for (int i=0; i<len; i++)
-      current += charUnit->getLastValue();
-
-   return current;
+   return currentValue;
 }
 
 bool RegularUnit::atEnd()
@@ -113,4 +87,12 @@ bool RegularUnit::atEnd()
 QString RegularUnit::print()
 {
    return charUnit->print() + repeatRange->print();
+}
+
+quint64 RegularUnit::count()
+{
+   if (repeatRange->getFirstValue() == 0)
+      return charUnit->count() * (repeatRange->count() - 1) + 1;
+
+   return charUnit->count() * repeatRange->count();
 }

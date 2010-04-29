@@ -24,14 +24,18 @@ CharConst::CharConst(QChar value_)
 // Returns new object or null, and moves \pos after reg.exp.
 CharConst * CharConst::tryRecognize(QString str, int & pos)
 {
-   if (pos + 1 == str.size()) return NULL;
+   if (pos == str.size()) return NULL;
 
 	// Not-escaped character
 	if (str[pos] != '\\')
+   {
+      if (QString("\\.-?+*()[]{}").indexOf(str[pos]) != -1)
+         throw RegException(pos, QObject::tr("Symbol must be escaped by \"\\\""));
 		return new CharConst(str[pos++]);
+   }
    pos++;
 
-   if (pos + 1 == str.size())
+   if (pos == str.size())
       throw RegException(pos, QObject::tr("Unexpected end of expression"));
 
 	// Simple escaped character
@@ -43,8 +47,7 @@ CharConst * CharConst::tryRecognize(QString str, int & pos)
 
 	// Code of character
 
-	pos++;
-	int len = 0;
+   int len = 0;
 	int base = 0;
 
 	int value = info->getByte(str[pos]);
@@ -67,19 +70,22 @@ CharConst * CharConst::tryRecognize(QString str, int & pos)
 
 		default:
 			base = 10;
-			while(str[pos+len].isDigit() && (len <= 3))
+         while(str[pos+len].isDigit() && (len <= 3))
 				len++;
+         pos--;
 			break;
 	}
+   pos++;
 
 	if (len == 0)
 		throw RegException(pos, QObject::tr("This character can not be escaped"));
 
-   if (pos + len >= str.size())
+   if (pos + len > str.size())
       throw RegException(pos+len, QObject::tr("Unexpected end of expression"));
 
-	bool res;
+   bool res = true;
 	int code = str.mid(pos, len).toInt(&res, base);
+   pos += len;
 
 	if (res == false)
 		throw RegException(pos, QObject::tr("Invalid chacter code"));
@@ -130,5 +136,8 @@ bool CharConst::atEnd()
 
 QString CharConst::print()
 {
-   return value;
+   if (info->getByte(value) < 32)
+      return QString("\\x%1").arg((int)info->getByte(value), 2, 16, QChar('0'));
+
+   return QString("%1").arg(value);
 }

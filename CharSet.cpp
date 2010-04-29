@@ -9,7 +9,7 @@ CommonUnitInfo * CharSet::info = NULL;
 
 //----------------------------------------------------------------
 
-CharSet::CharSet(QSet<QString> values_)
+CharSet::CharSet(QSet<QChar> values_)
 {
    values = values_.values();
 	makeFirstValue();
@@ -26,7 +26,7 @@ CharSet * CharSet::tryRecognize(QString str, int & pos)
 	int original = pos;
 	QList<IUnit<QString> *> list;
 
-   if (pos + 1 == str.size()) return NULL;
+   if (pos == str.size()) return NULL;
 
 	// First character
 	if (str[pos++] != '[')
@@ -35,8 +35,8 @@ CharSet * CharSet::tryRecognize(QString str, int & pos)
 		return NULL;
 	}
 
-   if (pos + 1 == str.size())
-      throw new RegException(pos, QObject::tr("Unexpected end of file"));
+   if (pos == str.size())
+      throw RegException(pos, QObject::tr("Unexpected end of file"));
 
 	// Inversion set character
 	bool inverse = false;
@@ -46,16 +46,20 @@ CharSet * CharSet::tryRecognize(QString str, int & pos)
 		pos++;
 	}
 
-   if (pos + 1 == str.size())
+   if (pos == str.size())
       throw RegException(pos, QObject::tr("Unexpected end of file"));
 
 	// Search all CharConst and CharRanges in set
 	for( ; ; )
 	{
-      if (pos + 1 == str.size())
+      if (pos == str.size())
          throw RegException(pos, "Backet \"]\" expected");
 
-		if (str[pos] == ']') break;
+      if (str[pos] == ']')
+      {
+         pos++;
+         break;
+      }
 
 		IUnit<QString> * unit = CharRange::tryRecognize(str, pos);
 
@@ -76,23 +80,23 @@ CharSet * CharSet::tryRecognize(QString str, int & pos)
 		throw RegException(pos, "Set of characters can not be empty");
 
 	// Unition of sets
-	QSet<QString> set;
+   QSet<QChar> set;
 	foreach (IUnit<QString> * item, list)
 	{
-		set.insert(item->makeFirstValue());
+      set.insert(item->makeFirstValue()[0]);
 		while (!item->atEnd())
-			set.insert(item->makeNextValue());
+         set.insert(item->makeNextValue()[0]);
 	}
 
 	if (inverse)
 	{
 		// Set inversion
-		QSet<QString> inv_set;
+      QSet<QChar> inv_set;
 		for (int code=0; code<256; code++)
 		{
-			QString str = info->getChar(code);
-			if (!set.contains(str))
-				inv_set.insert(str);
+         QChar chr = info->getChar(code);
+         if (!set.contains(chr))
+            inv_set.insert(chr);
 		}
 		set = inv_set;
 	}
@@ -151,7 +155,7 @@ QString CharSet::print()
    QString str = "[";
 
    for(int i=0; i<values.size(); i++)
-      str += values[i];
+      str += CharConst(values[i]).print();
 
    return str + "]";
 }

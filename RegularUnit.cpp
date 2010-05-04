@@ -90,9 +90,13 @@ QString RegularUnit::makeNextValue_()
 
 QString RegularUnit::makeNextValue()
 {
-   while (makeNextValue_().length() > maxLength);
+   while (makeNextValue_().length() > maxLength)
+   {
+      //qDebug() << currentValue;
+      if (atEnd()) break;
+   }
 
-   return currentValue;
+   return atEnd() ? "" : currentValue;
 }
 
 bool RegularUnit::atEnd()

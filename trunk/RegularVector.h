@@ -6,7 +6,7 @@
 #include <QList>
 
 //----------------------------------------------------------------
-// GroupUnit = "(" (RegularUnit | GroupUnit)+ ")" (RepeatRange)?
+// RegularVector = "(" (RegularUnit | RegularVector)+ ")" (RepeatRange)?
 //----------------------------------------------------------------
 
 namespace RegHope
@@ -35,9 +35,13 @@ namespace RegHope
       QString makeFirstValue();
       QString makeNextValue();
       bool atEnd();
+   private:
+      QString makeNextValue_();
+   public:
 
       virtual QString print();
       virtual quint64 count();
+      virtual void setMaxLength(int length);
    };
 }
 #endif // REGULARVECTOR_H

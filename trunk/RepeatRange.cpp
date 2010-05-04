@@ -18,6 +18,9 @@ RepeatRange::RepeatRange(int a_, int b_, bool haveMax_)
 
    firstValue = makeFirstValue();
    lastValue = b;
+
+   minLength = (haveMax) ? b : a;
+   maxLength = (haveMax) ? b : 1000000;
 }
 
 //----------------------------------------------------------------
@@ -96,14 +99,14 @@ int RepeatRange::makeFirstValue()
 
 int RepeatRange::makeNextValue()
 {
-   if (currentValue < b)
+   if ((currentValue < b) && (currentValue < maxLength))
       currentValue++;
    return currentValue;
 }
 
 bool RepeatRange::atEnd()
 {
-   return (currentValue == b);
+   return (currentValue == b) || ((currentValue == maxLength));
 }
 
 //----------------------------------------------------------------
@@ -132,7 +135,14 @@ QString RepeatRange::print()
 quint64 RepeatRange::count()
 {
    if (haveMax)
-      return (b - a + 1);
+      return (qMin(b, maxLength) - a + 1);
 
    return 1; //TODO fix counter without haveMax
+}
+
+void RepeatRange::setMaxLength(int length)
+{
+   if (!haveMax) b = length;
+   maxLength = length;
+   minLength = b;
 }

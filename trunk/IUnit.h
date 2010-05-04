@@ -39,6 +39,8 @@ namespace RegHope
       T firstValue;
       T currentValue;
       T lastValue;
+      int minLength;
+      int maxLength;
 
 	public:
 		virtual ~IUnit() {}
@@ -63,6 +65,11 @@ namespace RegHope
          return lastValue;
       }
 
+      int getMinLength()
+      {
+         return minLength;
+      }
+
 		// Iterative make
 		virtual T makeFirstValue() = 0;
 		virtual T makeNextValue() = 0;
@@ -70,6 +77,7 @@ namespace RegHope
 
       virtual QString print() = 0;
       virtual quint64 count() = 0;
+      virtual void setMaxLength(int length) {}
 	};
 }
 

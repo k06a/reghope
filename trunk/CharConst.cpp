@@ -15,6 +15,9 @@ CharConst::CharConst(QChar value_)
 
    firstValue = makeFirstValue();
    lastValue = value;
+
+   minLength = 1;
+   maxLength = 1;
 }
 
 //----------------------------------------------------------------
@@ -104,19 +107,18 @@ CharConst * CharConst::tryRecognize(QString str, int & pos)
 
 QString CharConst::makeFirstValue()
 {
-   atEnd_ = false;
-	return value;
+   currentValue = value;
+   return value;
 }
 
 QString CharConst::makeNextValue()
 {
-   atEnd_ = true;
 	return value;
 }
 
 bool CharConst::atEnd()
 {
-   return atEnd_;
+   return true;
 }
 
 //----------------------------------------------------------------

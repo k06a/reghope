@@ -29,15 +29,19 @@ namespace RegHope
       // Returns new object or null, and moves \pos after reg.exp.
       static IUnit<QString> * tryRecognize(QString str, int & pos);
 
-      static RegularExpression * parse(QString str);
+      static RegularExpression * parse(QString str, int maximumLength);
 
       // Iterative make
       QString makeFirstValue();
       QString makeNextValue();
       bool atEnd();
+   private:
+      QString makeNextValue_();
+   public:
 
       virtual QString print();
       virtual quint64 count();
+      virtual void setMaxLength(int length);
    };
 }
 

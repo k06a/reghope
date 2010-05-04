@@ -16,6 +16,9 @@ CharSet::CharSet(QSet<QChar> values_)
 
    firstValue = makeFirstValue();
    lastValue = values.last();
+
+   minLength = 1;
+   maxLength = 1;
 }
 
 //----------------------------------------------------------------

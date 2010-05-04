@@ -2,6 +2,7 @@
 #include "RegularVector.h"
 #include "RegularUnit.h"
 #include "CommonUnitInfo.h"
+#include <QDebug>
 
 using namespace RegHope;
 
@@ -17,6 +18,12 @@ RegularExpression::RegularExpression(QList<IUnit<QString> *> unitList_)
 
    foreach(IUnit<QString> *unit, unitList)
       lastValue += unit->getLastValue();
+   
+   minLength = 0;
+   foreach(IUnit<QString> *unit, unitList)
+      minLength += unit->getMinLength();
+
+   maxLength = 1000000;
 }
 
 //----------------------------------------------------------------
@@ -46,10 +53,14 @@ IUnit<QString> * RegularExpression::tryRecognize(QString str, int & pos)
    return new RegularExpression(list);
 }
 
-RegularExpression * RegularExpression::parse(QString str)
+RegularExpression * RegularExpression::parse(QString str, int maximumLength)
 {
    int pos = 0;
-   return (RegularExpression*)tryRecognize(str, pos);
+
+   RegularExpression *expr = (RegularExpression*)tryRecognize(str, pos);
+   expr->setMaxLength(maximumLength);
+
+   return expr;
 }
 
 //----------------------------------------------------------------
@@ -65,7 +76,7 @@ QString RegularExpression::makeFirstValue()
    return currentValue;
 }
 
-QString RegularExpression::makeNextValue()
+QString RegularExpression::makeNextValue_()
 {
    bool ended = true;
    for(int i = unitList.size()-1; i >= 0; i--)
@@ -85,18 +96,24 @@ QString RegularExpression::makeNextValue()
    }
 
    if (ended)
-   {
-      currentValue = "";
-
-      foreach(IUnit<QString>* unit, unitList)
-         currentValue += unit->getCurrentValue();
-   }
+      return currentValue;
 
    currentValue = "";
    foreach(IUnit<QString>* unit, unitList)
       currentValue += unit->getCurrentValue();
 
    return currentValue;
+}
+
+QString RegularExpression::makeNextValue()
+{
+   while (makeNextValue_().length() > maxLength)
+   {
+      //qDebug() << currentValue;
+      if (atEnd()) break;
+   }
+
+   return atEnd() ? "" : currentValue;
 }
 
 bool RegularExpression::atEnd()
@@ -133,4 +150,17 @@ quint64 RegularExpression::count()
       tmpCount *= unit->count();
 
    return tmpCount;
+}
+
+void RegularExpression::setMaxLength(int length)
+{
+   maxLength = length;
+   
+   int zapas = maxLength - minLength;
+
+   if (zapas < 0)
+      throw RegException(minLength, QObject::tr("Invalid maximum length"));
+
+   foreach(IUnit<QString> *unit, unitList)
+      unit->setMaxLength(unit->getMinLength() + zapas);
 }

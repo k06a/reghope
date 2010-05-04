@@ -19,6 +19,9 @@ RegularUnit::RegularUnit(IUnit<QString> *charUnit_, RepeatRange *repeatRange_)
    QString tmpStr = charUnit->getLastValue();
    for (int i=0; i<tmpLen; i++)
       lastValue += tmpStr;
+
+   minLength = repeatRange->getMinLength();
+   maxLength = 1000000;
 }
 
 //----------------------------------------------------------------
@@ -56,7 +59,7 @@ QString RegularUnit::makeFirstValue()
    return currentValue;
 }
 
-QString RegularUnit::makeNextValue()
+QString RegularUnit::makeNextValue_()
 {
    if (repeatRange->getCurrentValue() == 0)
    {
@@ -85,6 +88,13 @@ QString RegularUnit::makeNextValue()
    return currentValue;
 }
 
+QString RegularUnit::makeNextValue()
+{
+   while (makeNextValue_().length() > maxLength);
+
+   return currentValue;
+}
+
 bool RegularUnit::atEnd()
 {
    return (charUnit->atEnd() && repeatRange->atEnd());
@@ -103,4 +113,10 @@ quint64 RegularUnit::count()
       return charUnit->count() * (repeatRange->count() - 1) + 1;
 
    return charUnit->count() * repeatRange->count();
+}
+
+void RegularUnit::setMaxLength(int length)
+{
+   maxLength = length;
+   repeatRange->setMaxLength(length);
 }

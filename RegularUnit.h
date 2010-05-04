@@ -32,9 +32,13 @@ namespace RegHope
       QString makeFirstValue();
       QString makeNextValue();
       bool atEnd();
+   private:
+      QString makeNextValue_();
+   public:
 
       virtual QString print();
       virtual quint64 count();
+      virtual void setMaxLength(int length);
    };
 }
 

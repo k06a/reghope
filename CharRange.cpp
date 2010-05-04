@@ -16,6 +16,9 @@ CharRange::CharRange( CharConst * value_1_,
 
    firstValue = makeFirstValue();
    lastValue = value_2->getLastValue();
+
+   minLength = 1;
+   maxLength = 1;
 }
 
 //----------------------------------------------------------------

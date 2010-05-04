@@ -33,6 +33,7 @@ namespace RegHope
 
       virtual QString print();
       virtual quint64 count();
+      virtual void setMaxLength(int length);
    };
 }
 

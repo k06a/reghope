@@ -20,11 +20,16 @@ RegularVector::RegularVector(QList<IUnit<QString> *> unitList_, RepeatRange *rep
    for(int i = 0; i < tmpLen; i++)
       foreach(IUnit<QString>* unit, unitList)
          lastValue += unit->getLastValue();
+
+   minLength = 0;
+   foreach(IUnit<QString> *unit, unitList)
+      minLength += unit->getMinLength();
+   maxLength = (repeatRange->getLastValue() == -1) ? 1000000 : repeatRange->getLastValue();
 }
 
 //----------------------------------------------------------------
 
-// GroupUnit = "(" (RegularUnit | GroupUnit)+ ")" (RepeatUnit)?
+// RegularVector = "(" (RegularUnit | RegularVector)+ ")" (RepeatRange)?
 
 // Try to create reg.exp. unit from \str on position \pos.
 // Returns new object or null, and moves \pos after reg.exp.
@@ -88,7 +93,7 @@ QString RegularVector::makeFirstValue()
    return currentValue;
 }
 
-QString RegularVector::makeNextValue()
+QString RegularVector::makeNextValue_()
 {
    currentValue = "";
 
@@ -117,6 +122,17 @@ QString RegularVector::makeNextValue()
    }
 
    return currentValue;
+}
+
+QString RegularVector::makeNextValue()
+{
+   while (makeNextValue_().length() > maxLength)
+   {
+      //qDebug() << currentValue;
+      if (atEnd()) break;
+   }
+
+   return atEnd() ? "" : currentValue;
 }
 
 bool RegularVector::atEnd()
@@ -156,4 +172,21 @@ quint64 RegularVector::count()
       return tmpCount * repeatRange->count();
 
    return tmpCount * (repeatRange->count() - 1) + 1;
+}
+
+void RegularVector::setMaxLength(int length)
+{
+   maxLength = length;
+
+   int a = maxLength / repeatRange->getLastValue();
+   int zapas = a - minLength;
+
+   int elementsLength = 0;
+   foreach(IUnit<QString> *unit, unitList)
+   {
+      unit->setMaxLength(unit->getMinLength() + zapas);
+      elementsLength += unit->getMinLength();
+   }
+
+   repeatRange->setMaxLength(maxLength / elementsLength);
 }

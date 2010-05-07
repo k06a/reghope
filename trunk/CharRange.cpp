@@ -106,6 +106,13 @@ bool CharRange::atEnd()
 	return (currentValue == value_2->getLastValue());
 }
 
+QString CharRange::getRandValue()
+{
+   int a = info->getByte(value_1->getCurrentValue()[0]);
+   int b = info->getByte(value_2->getCurrentValue()[0]);
+   return info->getChar(qrand()%(b-a+1) + a);
+}
+
 //----------------------------------------------------------------
 
 QString CharRange::print()

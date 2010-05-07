@@ -86,10 +86,14 @@ QString RegularExpression::makeNextValue_()
       // Find leftest not ended element
       if (!ended)
       {
-         unitList[i++]->makeNextValue();
+         unitList[i]->makeNextValue();
+         i++;
 
          while (i < unitList.size())
-            unitList[i++]->makeFirstValue();
+         {
+            unitList[i]->makeFirstValue();
+            i++;
+         }
 
          break;
       }
@@ -113,7 +117,7 @@ QString RegularExpression::makeNextValue()
       if (atEnd()) break;
    }
 
-   return atEnd() ? "" : currentValue;
+   return (currentValue.length() > maxLength) ? "" : currentValue;
 }
 
 bool RegularExpression::atEnd()
@@ -128,6 +132,15 @@ bool RegularExpression::atEnd()
    }
 
    return true;
+}
+
+QString RegularExpression::getRandValue()
+{
+   QString tmpStr = "";
+   foreach(IUnit<QString>* unit, unitList)
+      tmpStr += unit->getRandValue();
+
+   return tmpStr;
 }
 
 //----------------------------------------------------------------

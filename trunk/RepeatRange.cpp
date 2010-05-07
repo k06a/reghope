@@ -93,8 +93,7 @@ RepeatRange * RepeatRange::tryRecognize(QString str, int & pos)
 
 int RepeatRange::makeFirstValue()
 {
-   currentValue = a;
-   return currentValue;
+   return (currentValue = a);
 }
 
 int RepeatRange::makeNextValue()
@@ -106,7 +105,13 @@ int RepeatRange::makeNextValue()
 
 bool RepeatRange::atEnd()
 {
-   return (currentValue == b) || ((currentValue == maxLength));
+   return ((currentValue == b) && haveMax) ||
+          ((currentValue == maxLength) && !haveMax);
+}
+
+int RepeatRange::getRandValue()
+{
+   return (qrand()%(b-a+1) + a);
 }
 
 //----------------------------------------------------------------
@@ -137,7 +142,7 @@ quint64 RepeatRange::count()
    if (haveMax)
       return (qMin(b, maxLength) - a + 1);
 
-   return 1; //TODO fix counter without haveMax
+   return (maxLength - a + 1); //TODO fix counter without haveMax
 }
 
 void RepeatRange::setMaxLength(int length)

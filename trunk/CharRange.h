@@ -31,6 +31,7 @@ namespace RegHope
       virtual QString makeFirstValue();
       virtual QString makeNextValue();
       virtual bool atEnd();
+      virtual QString getRandValue();
 
       virtual QString print();
       virtual quint64 count();

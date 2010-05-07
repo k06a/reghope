@@ -121,6 +121,11 @@ bool CharConst::atEnd()
    return true;
 }
 
+QString CharConst::getRandValue()
+{
+   return value;
+}
+
 //----------------------------------------------------------------
 
 QString CharConst::print()

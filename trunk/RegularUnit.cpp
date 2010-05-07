@@ -104,6 +104,18 @@ bool RegularUnit::atEnd()
    return (charUnit->atEnd() && repeatRange->atEnd());
 }
 
+QString RegularUnit::getRandValue()
+{
+   QString temp = "";
+
+   int tmpLen = repeatRange->getRandValue();
+   QString tmpStr = charUnit->getRandValue();
+   for (int i=0; i<tmpLen; i++)
+      temp += tmpStr;
+
+   return temp;
+}
+
 //----------------------------------------------------------------
 
 QString RegularUnit::print()

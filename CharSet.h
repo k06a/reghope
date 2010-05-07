@@ -17,7 +17,8 @@ namespace RegHope
    class CharSet : public IUnit<QString>
    {
       QList<QChar> values;
-      int currentIndex;
+      QList<QChar>::iterator iter;
+      bool atEnd_;
 
    public:
       static CommonUnitInfo * info;
@@ -33,6 +34,7 @@ namespace RegHope
       virtual QString makeFirstValue();
       virtual QString makeNextValue();
       virtual bool atEnd();
+      virtual QString getRandValue();
 
       virtual QString print();
       virtual quint64 count();

@@ -118,22 +118,26 @@ CharSet * CharSet::tryRecognize(QString str, int & pos)
 
 QString CharSet::makeFirstValue()
 {
-   currentIndex = 0;
-   currentValue = values[currentIndex];
-   return currentValue;
+   iter = values.begin();
+   return (currentValue = *iter);
 }
 
 QString CharSet::makeNextValue()
 {
-   if (currentIndex + 1 < values.size())
-      currentIndex++;
-   currentValue = values[currentIndex];
-   return currentValue;
+   ++iter;
+   return (currentValue = *iter);
 }
 
 bool CharSet::atEnd()
 {
-   return (currentIndex + 1 == values.size());
+   return (iter+1 == values.end());
+}
+
+QString CharSet::getRandValue()
+{
+   int a = 0;
+   int b = values.size() - 1;
+   return values[qrand()%(b-a+1) + a];
 }
 
 //----------------------------------------------------------------

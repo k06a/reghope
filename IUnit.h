@@ -74,6 +74,7 @@ namespace RegHope
 		virtual T makeFirstValue() = 0;
 		virtual T makeNextValue() = 0;
 		virtual bool atEnd() = 0;
+      virtual T getRandValue() = 0;
 
       virtual QString print() = 0;
       virtual quint64 count() = 0;

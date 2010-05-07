@@ -27,9 +27,10 @@ namespace RegHope
       static RepeatRange * tryRecognize(QString str, int & pos);
 
       // Iterative make
-      int makeFirstValue();
-      int makeNextValue();
-      bool atEnd();
+      virtual int makeFirstValue();
+      virtual int makeNextValue();
+      virtual bool atEnd();
+      virtual int getRandValue();
 
       virtual QString print();
       virtual quint64 count();

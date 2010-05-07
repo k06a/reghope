@@ -32,12 +32,13 @@ namespace RegHope
       static RegularExpression * parse(QString str, int maximumLength);
 
       // Iterative make
-      QString makeFirstValue();
-      QString makeNextValue();
-      bool atEnd();
+      virtual QString makeFirstValue();
+      virtual QString makeNextValue();
+      virtual bool atEnd();
    private:
       QString makeNextValue_();
    public:
+      virtual QString getRandValue();
 
       virtual QString print();
       virtual quint64 count();

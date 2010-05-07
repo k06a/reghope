@@ -132,7 +132,7 @@ QString RegularVector::makeNextValue()
       if (atEnd()) break;
    }
 
-   return atEnd() ? "" : currentValue;
+   return (currentValue.length() > maxLength) ? "" : currentValue;
 }
 
 bool RegularVector::atEnd()
@@ -147,6 +147,18 @@ bool RegularVector::atEnd()
    }
 
    return true;
+}
+
+QString RegularVector::getRandValue()
+{
+   QString temp = "";
+
+   int tmpLen = repeatRange->getRandValue();
+   for(int i = 0; i < tmpLen; i++)
+      foreach(IUnit<QString>* unit, unitList)
+         temp += unit->getRandValue();
+
+   return temp;
 }
 
 //----------------------------------------------------------------

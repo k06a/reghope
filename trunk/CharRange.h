@@ -9,25 +9,26 @@
 
 namespace RegHope
 {
-	class CharConst;
-	class CommonUnitInfo;
+   class CharConst;
+   class CommonUnitInfo;
 
-	class CharRange : public IUnit<QString>
-	{
-		CharConst * value_1;
-		CharConst * value_2;
+   class CharRange : public IUnit<QString>
+   {
+      unsigned char a;
+      unsigned char b;
+      int currentIndex;
 
-	public:
-		static CommonUnitInfo * info;
+   public:
+      static CommonUnitInfo * info;
 
-	public:
-		CharRange(CharConst * value_1_, CharConst * value_2_);
+   public:
+      CharRange(CharConst * a_, CharConst * b_);
 
-		// Try to create reg.exp. unit from \str on position \pos.
-		// Returns new object or null, and moves \pos after reg.exp.
+      // Try to create reg.exp. unit from \str on position \pos.
+      // Returns new object or null, and moves \pos after reg.exp.
       static CharRange * tryRecognize(QString str, int & pos);
 
-		// Iterative make
+      // Iterative make
       virtual QString makeFirstValue();
       virtual QString makeNextValue();
       virtual bool atEnd();
@@ -35,7 +36,7 @@ namespace RegHope
 
       virtual QString print();
       virtual quint64 count();
-	};
+   };
 }
 
 #endif // CHARRANGE_H

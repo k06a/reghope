@@ -32,9 +32,9 @@ class QString;
 
 namespace RegHope
 {
-	template<typename T>
-	class IUnit
-	{
+   template<typename T>
+   class IUnit
+   {
    protected:
       T firstValue;
       T currentValue;
@@ -42,14 +42,14 @@ namespace RegHope
       int minLength;
       int maxLength;
 
-	public:
-		virtual ~IUnit() {}
+   public:
+      virtual ~IUnit() {}
 
-		// Try to create reg.exp. unit from \str on position \pos.
-		// Returns new object or null, and moves \pos after reg.exp.
-		static IUnit * tryRecognize(QString str, int & pos);
+      // Try to create reg.exp. unit from \str on position \pos.
+      // Returns new object or null, and moves \pos after reg.exp.
+      static IUnit * tryRecognize(QString str, int & pos);
 
-		// Min and Max bounds
+      // Min and Max bounds
       T getFirstValue()
       {
          return firstValue;
@@ -70,16 +70,16 @@ namespace RegHope
          return minLength;
       }
 
-		// Iterative make
-		virtual T makeFirstValue() = 0;
-		virtual T makeNextValue() = 0;
-		virtual bool atEnd() = 0;
+      // Iterative make
+      virtual T makeFirstValue() = 0;
+      virtual T makeNextValue() = 0;
+      virtual bool atEnd() = 0;
       virtual T getRandValue() = 0;
 
       virtual QString print() = 0;
       virtual quint64 count() = 0;
       virtual void setMaxLength(int length) {}
-	};
+   };
 }
 
 #endif // IUNIT_H

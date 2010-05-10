@@ -23,7 +23,7 @@ namespace RegHope
 
       static void Init(CommonUnitInfo *cui);
 
-      unsigned int getByte(QChar value);
+      unsigned char getByte(QChar value);
 
       QChar getChar(char value);
    };

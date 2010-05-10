@@ -54,7 +54,7 @@ RepeatRange * RepeatRange::tryRecognize(QString str, int & pos)
 
    // Check int value
    if (!tryReadInt(str, pos, value_from))
-      throw RegException(pos, "Integer expected");
+      throw RegException(pos, QObject::tr("Integer expected"));
 
    if (pos == str.size())
       throw RegException(pos, QObject::tr("Symbol \",\" or \"}\" expected"));
@@ -68,7 +68,7 @@ RepeatRange * RepeatRange::tryRecognize(QString str, int & pos)
 
    // Semicolon
    if (str[pos] != ',')
-      throw RegException(pos, "Comma \",\" expected");
+      throw RegException(pos, QObject::tr("Comma \",\" expected"));
    pos++;
 
    if (pos == str.size())
@@ -82,7 +82,7 @@ RepeatRange * RepeatRange::tryRecognize(QString str, int & pos)
 
    // Check closing bracket
    if (str[pos] != '}')
-      throw RegException(pos, "\"}\" expected");
+      throw RegException(pos, QObject::tr("Symbol \"}\" expected"));
    pos++;
 
    return new RepeatRange(value_from, value_to, haveMaximum);

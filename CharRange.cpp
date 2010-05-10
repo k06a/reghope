@@ -8,14 +8,13 @@ CommonUnitInfo * CharRange::info = NULL;
 
 //----------------------------------------------------------------
 
-CharRange::CharRange( CharConst * value_1_,
-							 CharConst * value_2_ )
+CharRange::CharRange(CharConst * a_, CharConst * b_)
 {
-	value_1 = value_1_;
-	value_2 = value_2_;
+   a = info->getByte(a_->getFirstValue()[0]);
+   b = info->getByte(b_->getFirstValue()[0]);
 
    firstValue = makeFirstValue();
-   lastValue = value_2->getLastValue();
+   lastValue = info->getChar(b);
 
    minLength = 1;
    maxLength = 1;
@@ -33,21 +32,21 @@ CharRange * CharRange::tryRecognize(QString str, int & pos)
 
    if (pos == str.size()) return NULL;
 
-	// Check if dot
-	if (str[pos] == '.')
-	{
-		pos++;
-		return new CharRange( new CharConst(info->getChar(0)),
-									 new CharConst(info->getChar(255)) );
-	}
+   // Check if dot
+   if (str[pos] == '.')
+   {
+      pos++;
+      return new CharRange( new CharConst(info->getChar(0)),
+                            new CharConst(info->getChar(255)) );
+   }
 
-	// First character
+   // First character
    CharConst *unit_1 = CharConst::tryRecognize(str, pos);
-	if (unit_1 == NULL)
-	{
-		pos = original;
-		return NULL;
-	}
+   if (unit_1 == NULL)
+   {
+      pos = original;
+      return NULL;
+   }
 
    if (pos == str.size())
    {
@@ -56,25 +55,25 @@ CharRange * CharRange::tryRecognize(QString str, int & pos)
       return NULL;
    }
 
-	// Character "-" between characters
-	if (str[pos++] != '-')
-	{
-		pos = original;
-		delete unit_1;
-		return NULL;
-	}
+   // Character "-" between characters
+   if (str[pos++] != '-')
+   {
+      pos = original;
+      delete unit_1;
+      return NULL;
+   }
 
    if (pos == str.size())
       throw RegException(pos, QObject::tr("Range ending expected"));
 
-	// Second character
-	CharConst * unit_2 = CharConst::tryRecognize(str, pos);
-	if (unit_2 == NULL)
-	{
-		pos = original;
-		delete unit_1;
-		return NULL;
-	}
+   // Second character
+   CharConst * unit_2 = CharConst::tryRecognize(str, pos);
+   if (unit_2 == NULL)
+   {
+      pos = original;
+      delete unit_1;
+      return NULL;
+   }
 
    if ( (info->getByte(unit_1->getCurrentValue()[0])) >
         (info->getByte(unit_2->getCurrentValue()[0])) )
@@ -82,7 +81,7 @@ CharRange * CharRange::tryRecognize(QString str, int & pos)
       throw RegException(pos-3, QObject::tr("Range must be specified by lesser to greater value"), "^^^");
    }
 
-	return new CharRange(unit_1, unit_2);
+   return new CharRange(unit_1, unit_2);
 }
 
 //----------------------------------------------------------------
@@ -90,26 +89,25 @@ CharRange * CharRange::tryRecognize(QString str, int & pos)
 
 QString CharRange::makeFirstValue()
 {
-	currentValue = value_1->makeFirstValue();
-	return currentValue;
+   currentValue = info->getChar(currentIndex = a);
+   return currentValue;
 }
 
 QString CharRange::makeNextValue()
 {
-	if (currentValue != value_2->getLastValue())
-      currentValue = info->getChar(info->getByte(currentValue[0]) + 1);
-	return currentValue;
+   if (currentIndex < b)
+      currentIndex++;
+   currentValue = info->getChar(currentIndex);
+   return currentValue;
 }
 
 bool CharRange::atEnd()
 {
-	return (currentValue == value_2->getLastValue());
+   return (currentIndex == b);
 }
 
 QString CharRange::getRandValue()
 {
-   int a = info->getByte(value_1->getCurrentValue()[0]);
-   int b = info->getByte(value_2->getCurrentValue()[0]);
    return info->getChar(qrand()%(b-a+1) + a);
 }
 
@@ -117,11 +115,10 @@ QString CharRange::getRandValue()
 
 QString CharRange::print()
 {
-   return value_1->getFirstValue() + "-" + value_2->getLastValue();
+   return getFirstValue() + "-" + getLastValue();
 }
 
 quint64 CharRange::count()
 {
-   return (info->getByte(value_2->getCurrentValue()[0]) -
-           info->getByte(value_1->getCurrentValue()[0]) + 1);
+   return (b - a + 1);
 }

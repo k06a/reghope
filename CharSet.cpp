@@ -29,37 +29,37 @@ CharSet::CharSet(QSet<QChar> values_)
 // Returns new object or null, and moves \pos after reg.exp.
 CharSet * CharSet::tryRecognize(QString str, int & pos)
 {
-	int original = pos;
-	QList<IUnit<QString> *> list;
+   int original = pos;
+   QList<IUnit<QString> *> list;
 
    if (pos == str.size()) return NULL;
 
-	// First character
-	if (str[pos++] != '[')
-	{
-		pos = original;
-		return NULL;
-	}
+   // First character
+   if (str[pos++] != '[')
+   {
+      pos = original;
+      return NULL;
+   }
 
    if (pos == str.size())
       throw RegException(pos, QObject::tr("Unexpected end of file"));
 
-	// Inversion set character
-	bool inverse = false;
-	if (str[pos] == '^')
-	{
-		inverse = true;
-		pos++;
-	}
+   // Inversion set character
+   bool inverse = false;
+   if (str[pos] == '^')
+   {
+      inverse = true;
+      pos++;
+   }
 
    if (pos == str.size())
       throw RegException(pos, QObject::tr("Unexpected end of file"));
 
-	// Search all CharConst and CharRanges in set
-	for( ; ; )
-	{
+   // Search all CharConst and CharRanges in set
+   for( ; ; )
+   {
       if (pos == str.size())
-         throw RegException(pos, "Backet \"]\" expected");
+         throw RegException(pos, QObject::tr("Backet \"]\" expected"));
 
       if (str[pos] == ']')
       {
@@ -67,50 +67,50 @@ CharSet * CharSet::tryRecognize(QString str, int & pos)
          break;
       }
 
-		IUnit<QString> * unit = CharRange::tryRecognize(str, pos);
+      IUnit<QString> * unit = CharRange::tryRecognize(str, pos);
 
       if (unit == NULL)
-		{
-			unit = CharConst::tryRecognize(str, pos);
+      {
+         unit = CharConst::tryRecognize(str, pos);
 
-			if (unit == NULL)
-				break;
-			else
-				list.append(unit);
-		}
-		else
-			list.append(unit);
-	}
+         if (unit == NULL)
+            break;
+         else
+            list.append(unit);
+      }
+      else
+         list.append(unit);
+   }
 
-	if (!inverse && list.size() == 0)
-      throw RegException(pos-2, "Set of characters can not be empty", "^^");
+   if (!inverse && list.size() == 0)
+      throw RegException(pos-2, QObject::tr("Set of characters can not be empty"), "^^");
 
-	// Unition of sets
+   // Unition of sets
    QSet<QChar> set;
-	foreach (IUnit<QString> * item, list)
-	{
+   foreach (IUnit<QString> * item, list)
+   {
       set.insert(item->makeFirstValue()[0]);
-		while (!item->atEnd())
+      while (!item->atEnd())
          set.insert(item->makeNextValue()[0]);
-	}
+   }
 
-	if (inverse)
-	{
-		// Set inversion
+   if (inverse)
+   {
+      // Set inversion
       QSet<QChar> inv_set;
-		for (int code=0; code<256; code++)
-		{
+      for (int code=0; code<256; code++)
+      {
          QChar chr = info->getChar(code);
          if (!set.contains(chr))
             inv_set.insert(chr);
-		}
-		set = inv_set;
-	}
+      }
+      set = inv_set;
+   }
 
-	foreach(IUnit<QString> *unit, list)
-		delete unit;
+   foreach(IUnit<QString> *unit, list)
+      delete unit;
 
-	return new CharSet(set);
+   return new CharSet(set);
 }
 
 //----------------------------------------------------------------

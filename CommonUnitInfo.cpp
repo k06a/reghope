@@ -27,10 +27,10 @@ void CommonUnitInfo::Init(CommonUnitInfo *cui)
 
 //----------------------------------------------------------------
 
-unsigned int CommonUnitInfo::getByte(QChar value)
+unsigned char CommonUnitInfo::getByte(QChar value)
 {
    QByteArray arr = codec->fromUnicode(&value, 1);
-   return (unsigned int)arr[0];
+   return (unsigned char)arr[0];
 }
 
 QChar CommonUnitInfo::getChar(char value)
@@ -57,7 +57,7 @@ bool RegHope::tryReadInt(QString str, int & pos, int & value)
    bool res;
    value = str.mid(pos, zeros+digits).toInt(&res);
    if (!res)
-      throw RegException(pos, "Invalid integer value");
+      throw RegException(pos, QObject::tr("Invalid integer value"));
 
    pos += (zeros + digits);
    return true;

@@ -31,6 +31,8 @@ RepeatRange::RepeatRange(int a_, int b_, bool haveMax_)
 // Returns new object or null, and moves \pos after reg.exp.
 RepeatRange * RepeatRange::tryRecognize(QString str, int & pos)
 {
+   int origin = pos;
+
    int value_from = 0;
    int value_to = 0;
    bool haveMaximum = true;
@@ -84,6 +86,9 @@ RepeatRange * RepeatRange::tryRecognize(QString str, int & pos)
    if (str[pos] != '}')
       throw RegException(pos, QObject::tr("Symbol \"}\" expected"));
    pos++;
+
+   if (value_from > value_to)
+      throw RegException(origin+1, QObject::tr("Range must be specified by lesser to greater value"), "^^^");
 
    return new RepeatRange(value_from, value_to, haveMaximum);
 }
